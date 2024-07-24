@@ -15,8 +15,27 @@ function getTeamLinks(htmlRoot, file)
                             for row in AbstractTrees.children(child)
                                 if tag(row) == :tr
                                     println("---------------------------------------------------------------------------------------------------------------------------------------------------------------")
-                                    println(row)
-                                    println("---------------------------------------------------------------------------------------------------------------------------------------------------------------")
+                                    for cell in AbstractTrees.children(row)
+                                        if tag(cell) == :td
+                                            for i in AbstractTrees.children(cell)
+                                                println(text(i))
+                                                try
+                                                    if tag(i) == :a
+                                                        try
+                                                            link = String(getattr(i, "href")) * "\n"
+                                                            println("link: ", link)
+                                                            write(file, link)
+                                                        catch
+                                                            println("link crash")
+                                                        end
+                                                    end
+                                                catch
+                                                    println("access crash")
+                                                end
+                                            end
+                                        end
+                                    end
+                                    println("\n---------------------------------------------------------------------------------------------------------------------------------------------------------------")
                                 end
                             end
                         end
@@ -41,13 +60,12 @@ function getRagnarData()
     return root
 end
 
-function getFile()
-    file = open("../resources/teams.txt", "w+")
-    return file
-end
+
 
 function main()
-    getTeamLinks(getRagnarData(), getFile())
+    f = open("../resources/teams.txt", "w+")
+    getTeamLinks(getRagnarData(), f)
+    close(f)
 end
 
 
